@@ -20,18 +20,18 @@ package org.wso2.internal;
 
 /**
  * 
- * This is the invoker class that will trigger the task.
- * This cass should be called on regular interval by another process
+ * This is the invoker class that will trigger the task. This class should be
+ * called on regular interval by another process.
  *
  */
 
 public class Main {
 
-  public static void main(String[] args) {
-    System.out.println("Starting the Git to DB Sync Service");
-    ReadData readData = new ReadData();
-    readData.readWriteData();
-    System.out.println("Ended the Git to DB Sync Service");
-  }
-  
+	public static void main(String[] args) {
+		System.out.println("Starting the Git to DB Sync Service");
+		ProcessData processData = new ProcessData();
+		processData.readWriteData();
+		System.out.println("Ended the Git to DB Sync Service");
+	}
+
 }

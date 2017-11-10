@@ -26,7 +26,7 @@ public class GitCard {
 	private String issueId;
 	private String title;
 	private String assigneeId;
-	
+
 	public String getNote() {
 		return note;
 	}
@@ -82,6 +82,5 @@ public class GitCard {
 	public void setAssigneeId(String assigneeId) {
 		this.assigneeId = assigneeId;
 	}
-	
-	
+
 }

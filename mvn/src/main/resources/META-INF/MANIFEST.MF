@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Built-By: WSO2
+Created-By: Malaka Silva 
+Main-Class: org.wso2.internal.Main

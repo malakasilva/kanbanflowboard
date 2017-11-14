@@ -95,7 +95,10 @@ public class ProcessData {
 		// Find Project Columns and Cards
 		// Using the API https://api.github.com/projects/<project_id>/columns
 		for (GitProject gitProject : gitProjects) {
-			readColumns(gitProject);
+			//Process only the oprn projects
+			if("OPEN".equals(gitProject.getState())){
+				readColumns(gitProject);
+			}
 		}
 		writeData.close();
 	}

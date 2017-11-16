@@ -47,11 +47,10 @@ public class Table {
 	@Resource(name = "jdbc/kabana")
 	private DataSource ds;
 	private static final String QUERY = "SELECT c.ColumnName,c.Note,c.Title, p.Name, a.Login,a.Profile "
-			+ "FROM Cards c "
-			+ "LEFT OUTER JOIN Projects p ON c.ProjectId = p.ProjectID "
-			+ "LEFT OUTER JOIN Assignee a ON c.AssigneeId = a.AssigneeID "
-			+ "where p.State = 'OPEN' "
-			+ "ORDER BY c.ColumnName";
+			+ "FROM Cards c " + "LEFT OUTER JOIN Projects p ON c.ProjectId = p.ProjectID "
+			+ "LEFT OUTER JOIN Assignee a ON c.AssigneeId = a.AssigneeID " + "where p.State = 'OPEN' "
+			+ "order by c.Backlog,c.Planned,c.USReady,c.USReviewed,c.DesignReviewed,c.InProgress,c.Blocked,"
+			+ "c.CodeReviewed,c.SamplesDone,c.TestsAutomated,c.Done desc";
 
 	/**
 	 * 

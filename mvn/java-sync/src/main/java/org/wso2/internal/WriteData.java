@@ -39,7 +39,8 @@ import org.wso2.internal.git.dto.GitCard;
 public class WriteData {
 
 	private Connection connection;
-
+    private Long currentTimestamp;
+	
 	/**
 	 * 
 	 * @param databaseDriver
@@ -52,6 +53,7 @@ public class WriteData {
 			// create a java (mysql) database connection
 			Class.forName(databaseDriver);
 			connection = DriverManager.getConnection(databaseUrl, userName, password);
+			currentTimestamp = (new Date()).getTime();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			connection = null;
@@ -99,7 +101,8 @@ public class WriteData {
 				sb.append("Note = ?,");
 				sb.append("IssueId = ?,");
 				sb.append("Title = ?,");
-				sb.append("AssigneeId = ? ");
+				sb.append("AssigneeId = ?,");
+				sb.append("Lastmodifiedtimestamp = ? ");
 				if (columnChange) {
 					sb.append("," + getNewStateColumn(gitCard.getColumn()) + " = ? ");
 				}
@@ -111,11 +114,12 @@ public class WriteData {
 				preparedStatement2.setString(4, gitCard.getIssueId());
 				preparedStatement2.setString(5, gitCard.getTitle());
 				preparedStatement2.setString(6, gitCard.getAssigneeId());
+				preparedStatement2.setTimestamp(7, new Timestamp(currentTimestamp));
 				if (columnChange) {
-					preparedStatement2.setTimestamp(7, new Timestamp(new Date().getTime()));
-					preparedStatement2.setString(8, gitCard.getCardId());
+					preparedStatement2.setTimestamp(8, new Timestamp(new Date().getTime()));
+					preparedStatement2.setString(9, gitCard.getCardId());
 				} else {
-					preparedStatement2.setString(7, gitCard.getCardId());
+					preparedStatement2.setString(8, gitCard.getCardId());
 				}
 
 				return preparedStatement2.executeUpdate();
@@ -124,9 +128,9 @@ public class WriteData {
 				StringBuilder sb1 = new StringBuilder();
 				StringBuilder sb2 = new StringBuilder();
 				sb1.append("insert into Cards ");
-				sb1.append("(CardID,ProjectId,ColumnName,Note,IssueId,Title,AssigneeId,");
+				sb1.append("(CardID,ProjectId,ColumnName,Note,IssueId,Title,AssigneeId,Lastmodifiedtimestamp,");
 				sb1.append(getNewStateColumn(gitCard.getColumn()));
-				sb1.append(") values (?,?,?,?,?,?,?,?)");
+				sb1.append(") values (?,?,?,?,?,?,?,?,?)");
 
 				preparedStatement2 = connection.prepareStatement(sb1.toString());
 
@@ -137,7 +141,8 @@ public class WriteData {
 				preparedStatement2.setString(5, gitCard.getIssueId());
 				preparedStatement2.setString(6, gitCard.getTitle());
 				preparedStatement2.setString(7, gitCard.getAssigneeId());
-				preparedStatement2.setTimestamp(8, new Timestamp(new Date().getTime()));
+				preparedStatement2.setTimestamp(8, new Timestamp(currentTimestamp));
+				preparedStatement2.setTimestamp(9, new Timestamp(new Date().getTime()));
 				return preparedStatement2.executeUpdate();
 			}
 		} catch (SQLException e) {
@@ -199,6 +204,23 @@ public class WriteData {
 
 	/**
 	 * 
+	 * Delete the records that were not update in the cycle
+	 * 
+	 * @param strTableNames
+	 */
+	public void cleanRecords(String...strTableNames){
+		for(String strTableName:strTableNames){			
+			try (PreparedStatement preparedStatement = connection.prepareStatement("delete from " + strTableName + " where Lastmodifiedtimestamp < ?")) {
+				preparedStatement.setTimestamp(1, new Timestamp(currentTimestamp));
+				preparedStatement.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();				
+			}
+		}
+	}
+	
+	/**
+	 * 
 	 * If a record exists update. Otherwise insert.
 	 * 
 	 * @param id
@@ -234,6 +256,7 @@ public class WriteData {
 
 					}
 				}
+				sb.append(",Lastmodifiedtimestamp = ?");
 				sb.append(" where " + id + " = ?");
 				preparedStatement2 = connection.prepareStatement(sb.toString());
 				int i = 0;
@@ -242,6 +265,7 @@ public class WriteData {
 						preparedStatement2.setString(++i, mColumns.get(strkey));
 					}
 				}
+				preparedStatement2.setTimestamp(++i, new Timestamp(currentTimestamp));
 				preparedStatement2.setString(++i, mColumns.get(id));
 				return preparedStatement2.executeUpdate();
 
@@ -260,11 +284,12 @@ public class WriteData {
 						sb2.append(",?");
 					}
 				}
-				preparedStatement2 = connection.prepareStatement(sb1.toString() + ") values (" + sb2.toString() + ")");
+				preparedStatement2 = connection.prepareStatement(sb1.toString() + ",Lastmodifiedtimestamp) values (" + sb2.toString() + ",?)");
 				int i = 0;
 				for (String strkey : mColumns.keySet()) {
 					preparedStatement2.setString(++i, mColumns.get(strkey));
 				}
+				preparedStatement2.setTimestamp(++i, new Timestamp(currentTimestamp));
 				return preparedStatement2.executeUpdate();
 			}
 		} catch (SQLException e) {

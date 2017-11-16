@@ -18,6 +18,8 @@
 
 package org.wso2.internal;
 
+import java.util.Date;
+
 /**
  * 
  * This is the invoker class that will trigger the task. This class should be

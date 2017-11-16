@@ -19,8 +19,8 @@
 
   <Resource name="jdbc/kabana" auth="Container" type="javax.sql.DataSource" 
                maxActive="50" maxIdle="30" maxWait="10000" 
-               username="root" password="root" 
+               username="wso2" password="wso2" 
                driverClassName="com.mysql.jdbc.Driver" 
-               url="jdbc:mysql://localhost:3306/kabana"/>
+               url="jdbc:mysql://10.100.0.221:3306/kanban"/>
 
 </Context>

@@ -26,6 +26,8 @@ CREATE TABLE `Assignee` (
   `AssigneeID` char(8) NOT NULL,
   `Login` varchar(45) DEFAULT NULL,
   `Profile` varchar(55) DEFAULT NULL,
+  `Lastmodifiedtimestamp` DATETIME DEFAULT NULL,
+
   PRIMARY KEY (`AssigneeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -57,6 +59,7 @@ CREATE TABLE `Cards` (
   `SamplesDone` datetime DEFAULT NULL,
   `TestsAutomated` datetime DEFAULT NULL,
   `Done` datetime DEFAULT NULL,
+  `Lastmodifiedtimestamp` DATETIME DEFAULT NULL,
   PRIMARY KEY (`CardID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -72,6 +75,20 @@ CREATE TABLE `Projects` (
   `ProjectID` char(8) NOT NULL,
   `Name` varchar(45) DEFAULT NULL,
   `State` varchar(45) DEFAULT NULL,
+  `Lastmodifiedtimestamp` DATETIME DEFAULT NULL,
   PRIMARY KEY (`ProjectID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `MetaDetails`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `MetaDetails` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `LastTimeStamp` DATETIME NULL,
+  `Status` VARCHAR(255) NULL,
+  `Lastmodifiedtimestamp` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

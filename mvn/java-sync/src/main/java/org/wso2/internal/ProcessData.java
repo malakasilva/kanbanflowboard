@@ -95,11 +95,16 @@ public class ProcessData {
 		// Find Project Columns and Cards
 		// Using the API https://api.github.com/projects/<project_id>/columns
 		for (GitProject gitProject : gitProjects) {
-			//Process only the oprn projects
-			if("OPEN".equals(gitProject.getState())){
+			// Process only the oprn projects
+			if (gitProject.getState() != null && "open".equals(gitProject.getState().toLowerCase().trim())) {
+				System.out.println("Sync project : " + gitProject.getName());
 				readColumns(gitProject);
 			}
 		}
+		
+		//Delete deleted records
+		writeData.cleanRecords("Assignee","Cards","Projects");
+		
 		writeData.close();
 	}
 

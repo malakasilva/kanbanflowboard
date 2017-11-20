@@ -26,6 +26,7 @@ public class Card {
     private String assigneeName;
     private String assigneeProfile;
     private String style;
+    private String issueLink;
     
 
     public Card(){
@@ -80,6 +81,15 @@ public class Card {
 	public void setStyle(String style) {
 		this.style = style;
 	}
+	
+	public String getIssueLink() {
+		return issueLink;
+	}
+
+	public void setIssueLink(String issueLink) {
+		this.issueLink = issueLink;
+	}
+
 	public String getDisplay(){
 		String rtnString = "";
   		if(title != null && !title.trim().equals("")){

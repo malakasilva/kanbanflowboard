@@ -25,6 +25,7 @@ public class GitCard {
 	private String note;
 	private String issueId;
 	private String title;
+	private String issueLink;
 	private String assigneeId;
 
 	public String getNote() {
@@ -73,6 +74,14 @@ public class GitCard {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getIssueLink() {
+		return issueLink;
+	}
+
+	public void setIssueLink(String issueLink) {
+		this.issueLink = issueLink;
 	}
 
 	public String getAssigneeId() {

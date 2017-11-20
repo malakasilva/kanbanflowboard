@@ -102,11 +102,12 @@ public class WriteData {
 				sb.append("IssueId = ?,");
 				sb.append("Title = ?,");
 				sb.append("AssigneeId = ?,");
-				sb.append("Lastmodifiedtimestamp = ? ");
+				sb.append("Lastmodifiedtimestamp = ?,");
+				sb.append("IssueLink = ?");				
 				if (columnChange) {
-					sb.append("," + getNewStateColumn(gitCard.getColumn()) + " = ? ");
+					sb.append("," + getNewStateColumn(gitCard.getColumn()) + " = ?");
 				}
-				sb.append("where CardID = ?");
+				sb.append(" where CardID = ?");
 				preparedStatement2 = connection.prepareStatement(sb.toString());
 				preparedStatement2.setString(1, gitCard.getProjectId());
 				preparedStatement2.setString(2, gitCard.getColumn());
@@ -115,11 +116,12 @@ public class WriteData {
 				preparedStatement2.setString(5, gitCard.getTitle());
 				preparedStatement2.setString(6, gitCard.getAssigneeId());
 				preparedStatement2.setTimestamp(7, new Timestamp(currentTimestamp));
+				preparedStatement2.setString(8, gitCard.getIssueLink());
 				if (columnChange) {
-					preparedStatement2.setTimestamp(8, new Timestamp(new Date().getTime()));
-					preparedStatement2.setString(9, gitCard.getCardId());
+					preparedStatement2.setTimestamp(9, new Timestamp(new Date().getTime()));
+					preparedStatement2.setString(10, gitCard.getCardId());
 				} else {
-					preparedStatement2.setString(8, gitCard.getCardId());
+					preparedStatement2.setString(9, gitCard.getCardId());
 				}
 
 				return preparedStatement2.executeUpdate();
@@ -128,9 +130,10 @@ public class WriteData {
 				StringBuilder sb1 = new StringBuilder();
 				StringBuilder sb2 = new StringBuilder();
 				sb1.append("insert into Cards ");
-				sb1.append("(CardID,ProjectId,ColumnName,Note,IssueId,Title,AssigneeId,Lastmodifiedtimestamp,");
+				sb1.append("(CardID,ProjectId,ColumnName,Note,IssueId,"
+						+ "Title,AssigneeId,Lastmodifiedtimestamp,IssueLink,");
 				sb1.append(getNewStateColumn(gitCard.getColumn()));
-				sb1.append(") values (?,?,?,?,?,?,?,?,?)");
+				sb1.append(") values (?,?,?,?,?,?,?,?,?,?)");
 
 				preparedStatement2 = connection.prepareStatement(sb1.toString());
 
@@ -142,7 +145,8 @@ public class WriteData {
 				preparedStatement2.setString(6, gitCard.getTitle());
 				preparedStatement2.setString(7, gitCard.getAssigneeId());
 				preparedStatement2.setTimestamp(8, new Timestamp(currentTimestamp));
-				preparedStatement2.setTimestamp(9, new Timestamp(new Date().getTime()));
+				preparedStatement2.setString(9, gitCard.getIssueLink());
+				preparedStatement2.setTimestamp(10, new Timestamp(new Date().getTime()));
 				return preparedStatement2.executeUpdate();
 			}
 		} catch (SQLException e) {

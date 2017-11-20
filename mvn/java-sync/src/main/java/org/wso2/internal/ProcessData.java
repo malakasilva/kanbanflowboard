@@ -162,7 +162,9 @@ public class ProcessData {
 				JSONObject jIssue = (JSONObject) phrase(invokeApi(httpGet));
 				gitCard.setIssueId(jIssue.get("id").toString());
 				gitCard.setTitle(getString(jIssue.get("title")));
-
+				//HTML link of the issue
+				gitCard.setIssueLink(getString(jIssue.get("html_url")));
+				
 				JSONObject jAssignee = ((JSONObject) jIssue.get("assignee"));
 				if (jAssignee != null && jAssignee.get("id") != null) {
 					String assigneeId = jAssignee.get("id").toString();

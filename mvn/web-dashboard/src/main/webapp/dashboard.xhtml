@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+	$('[data-toggle="toggle"]').change(function(){
+		$(this).parents().next('.hide').toggle();
+	});
+});	
+</script>
+	<h:outputStylesheet library="css" name="style.css" />
+	<title>WSO2 Project Board</title>
+</h:head>
+<h:body>
+
+<h:form id="frm">
+<h:selectManyCheckbox value="#{project.selectProjects}" id="inputFilter">
+	<f:selectItems value="#{project.selectProjectsValue}" />
+</h:selectManyCheckbox>
+<br/>
+<h:commandButton value="Filter" action="dashboard" />
+<br/>
+<table>
+<tbody>
+	<h:dataTable value="#{project.projects}" var="p" id="resultTable" >
+		<h:column>
+
+		<tbody class="labels">
+			<tr>
+				<td colspan="2">
+					<label for="#{p.name}">#{p.name}</label>
+					<input type="checkbox" name="#{p.name}" id="#{p.name}" data-toggle="toggle"/>
+				</td>
+			</tr>
+		</tbody>
+		<tbody class="hide">
+		<tr>
+		<td>
+			<h:dataTable value="#{p.raws}" var="r" styleClass="card-table"
+				headerClass="card-table-header"	rowClasses="card-table-odd-row,card-table-even-row">		
+				<h:column>
+					<f:facet name="header">Backlog</f:facet>
+					<div class="curved-box" style="#{r.column1.style}">
+					    <a href="#{r.column1.issueLink}" target="new">#{r.column1.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column1.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column1.assigneeProfile}" alt="#{r.column1.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>	
+				<h:column>
+					<f:facet name="header">Planned</f:facet>
+					<div class="curved-box" style="#{r.column2.style}">
+					    <a href="#{r.column2.issueLink}" target="new">#{r.column2.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column2.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column2.assigneeProfile}" alt="#{r.column2.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">User Stories (Ready)</f:facet>
+					<div class="curved-box" style="#{r.column3.style}">
+					    <a href="#{r.column3.issueLink}" target="new">#{r.column3.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column3.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column3.assigneeProfile}" alt="#{r.column3.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">User Stories (Reviewed)</f:facet>
+					<div class="curved-box" style="#{r.column4.style}">
+					    <a href="#{r.column4.issueLink}" target="new">#{r.column4.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column4.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column4.assigneeProfile}" alt="#{r.column4.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Design Reviewed</f:facet>
+					<div class="curved-box" style="#{r.column5.style}">
+					    <a href="#{r.column5.issueLink}" target="new">#{r.column5.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column5.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column5.assigneeProfile}" alt="#{r.column5.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">In Progress</f:facet>
+					<div class="curved-box" style="#{r.column6.style}">
+					    <a href="#{r.column6.issueLink}" target="new">#{r.column6.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column6.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column6.assigneeProfile}" alt="#{r.column6.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>		
+				<h:column>
+					<f:facet name="header">Blocked</f:facet>
+					<div class="curved-box" style="#{r.column7.style}">
+					    <a href="#{r.column7.issueLink}" target="new">#{r.column7.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column7.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column7.assigneeProfile}" alt="#{r.column7.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Code Reviewed</f:facet>
+					<div class="curved-box" style="#{r.column8.style}">
+					    <a href="#{r.column8.issueLink}" target="new">#{r.column8.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column8.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column8.assigneeProfile}" alt="#{r.column8.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Samples Done</f:facet>
+					<div class="curved-box" style="#{r.column9.style}">
+					    <a href="#{r.column9.issueLink}" target="new">#{r.column9.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column9.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column9.assigneeProfile}" alt="#{r.column9.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Tests Automated</f:facet>
+					<div class="curved-box" style="#{r.column10.style}">
+					    <a href="#{r.column10.issueLink}" target="new">#{r.column10.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column10.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column10.assigneeProfile}" alt="#{r.column10.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Done</f:facet>
+					<div class="curved-box" style="#{r.column11.style}">
+					    <a href="#{r.column11.issueLink}" target="new">#{r.column11.display}</a>			   
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+						<tr>
+						<td><i>#{r.column11.assigneeName}</i></td>			
+						<td align="right"><img src="#{r.column11.assigneeProfile}" alt="#{r.column11.assigneeName}" height="42" width="42" /></td>
+						</tr>
+						</table>											
+					</div>
+				</h:column>																																								
+			</h:dataTable>		
+		</td>
+		</tr>
+		</tbody>
+		</h:column>		
+	</h:dataTable>
+</tbody>
+</table>
+</h:form>
+</h:body>
+</html>

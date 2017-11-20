@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,7 @@ public class ProcessData {
 	
 	/**
 	 * Start the main process with this method
+	 * 
 	 */
 	public void readWriteData() {
 		// Read property file
@@ -70,7 +72,9 @@ public class ProcessData {
 			prop.load(input);
 			writeData = new WriteData("org.gjt.mm.mysql.Driver", prop.getProperty("database"),
 					prop.getProperty("dbuser"), prop.getProperty("dbpassword"));
-			basicAuth = prop.getProperty("gituser");
+			String strUserName = null;
+			basicAuth = new String(Base64.getEncoder()
+					.encode((prop.getProperty("gituser") + ":" + prop.getProperty("gitpassword")).getBytes()));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			writeData = new WriteData();

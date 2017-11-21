@@ -24,7 +24,9 @@ public class Card {
     private String title; 
     private String projectName;
     private String assigneeName;
+    //Picture url
     private String assigneeProfile;
+    //This is used to hide the card when empty
     private String style;
     private String issueLink;
     

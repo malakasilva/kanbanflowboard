@@ -44,29 +44,29 @@ import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * 
- * This is the call being called from the view
- * At the initialazion state get the data and prepare the table view
+ * This is the call being called from the view At the initialazion state get the
+ * data and prepare the table view
  *
  */
 
 @ManagedBean(name = "project")
-public class ProjectBean extends ActionSupport{
+public class ProjectBean extends ActionSupport {
 
-	private String [] selectProjects;
+	private String[] selectProjects;
 	private List<Project> projects = new ArrayList<Project>();
 
-
-	@Resource(name = "jdbc/kabana")
+	@Resource(name = "jdbc/kanban")
 	private DataSource ds;
-	
+
 	private static final String QUERY = "SELECT c.ColumnName,c.Note,c.Title,c.IssueLink,p.Name,a.Login,a.Profile "
 			+ "FROM Cards c " + "LEFT OUTER JOIN Projects p ON c.ProjectId = p.ProjectID "
 			+ "LEFT OUTER JOIN Assignee a ON c.AssigneeId = a.AssigneeID " + "where p.State like 'OPEN' andwhere"
 			+ "order by p.Name, c.Backlog,c.Planned,c.USReady,c.USReviewed,c.DesignReviewed,c.InProgress,c.Blocked,"
 			+ "c.CodeReviewed,c.SamplesDone,c.TestsAutomated,c.Done desc";
-	
+
 	private static final String QUERY_PROJECTS = "SELECT ProjectID,Name FROM kanban.Projects "
 			+ "where State like 'open' order by Name;";
+
 	/**
 	 * 
 	 * Call the DB and load the data view
@@ -74,30 +74,29 @@ public class ProjectBean extends ActionSupport{
 	 */
 	public ProjectBean() {
 
-		// Get the Filter values
+		// Get the Filter value(s)
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
 				.getRequest();
 		Map pMap = req.getParameterMap();
-		String[]filterProjects = null;
-		if(pMap.get("frm:inputFilter") != null) {
-			filterProjects = (String[])pMap.get("frm:inputFilter");
+		String[] filterProjects = null;
+		if (pMap.get("frm:inputFilter") != null) {
+			filterProjects = (String[]) pMap.get("frm:inputFilter");
 		}
 
-	
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		
-		//This is to temporary hold the projects
-		Map<String,List<List<Card>>>lProjects = new HashMap<String,List<List<Card>>>();
-					
+
+		// This is to temporary hold the projects
+		Map<String, List<List<Card>>> lProjects = new HashMap<String, List<List<Card>>>();
+
 		try {
 			Context ctx = new InitialContext();
-			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/kabana");
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/kanban");
 		} catch (NamingException e1) {
 			e1.printStackTrace();
 			return;
 		}
-			
+
 		// Call db and fill card objects
 		try (Connection con = ds.getConnection()) {
 			if (filterProjects == null) {
@@ -106,8 +105,8 @@ public class ProjectBean extends ActionSupport{
 				StringBuilder sb = new StringBuilder();
 				sb.append(" and p.ProjectID in (");
 				boolean bFirst = true;
-				for(String filterproject:filterProjects) {
-					if(bFirst) {
+				for (String filterproject : filterProjects) {
+					if (bFirst) {
 						sb.append("'" + filterproject + "'");
 						bFirst = false;
 					} else {
@@ -123,6 +122,7 @@ public class ProjectBean extends ActionSupport{
 			// This is to temparary hold the rows and columns
 			List<List<Card>> lTable = null;
 			String lastProject = null;
+			//Fill objects per project.
 			while (resultSet.next()) {
 				String currentProject = resultSet.getString(5);
 				if (lastProject == null || !currentProject.equals(lastProject)) {
@@ -131,8 +131,10 @@ public class ProjectBean extends ActionSupport{
 					}
 					lTable = new ArrayList<List<Card>>();
 					// Initalize 11 columns
-					// Backlog, Planned, User Stories (Ready), User Stories (Reviewed), Design
-					// Reviewed, In Progress, Blocked, Code Reviewed, Samples Done, Tests Automated,
+					// Backlog, Planned, User Stories (Ready), User Stories
+					// (Reviewed), Design
+					// Reviewed, In Progress, Blocked, Code Reviewed, Samples
+					// Done, Tests Automated,
 					// Done
 					for (int i = 0; i < 11; i++) {
 						lTable.add(new ArrayList<>());
@@ -141,7 +143,8 @@ public class ProjectBean extends ActionSupport{
 				}
 				Card card = new Card();
 				// Order of the select query
-				// c.ColumnName,c.Note,c.Title,c.issueLink, p.Name, a.Login,a.Profile
+				// c.ColumnName,c.Note,c.Title,c.issueLink, p.Name,
+				// a.Login,a.Profile
 				card.setColumnName(resultSet.getString(1));
 				card.setNote(resultSet.getString(2));
 				card.setTitle(resultSet.getString(3));
@@ -160,7 +163,7 @@ public class ProjectBean extends ActionSupport{
 		} finally {
 			try {
 				preparedStatement.close();
-			} catch (SQLException e) {				
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			try {
@@ -168,9 +171,10 @@ public class ProjectBean extends ActionSupport{
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
+		//Devide the cards to table columns based on the state eg:backlog, planning, etc
 		for (String sProjectName : lProjects.keySet()) {
 			List<List<Card>> lTable = lProjects.get(sProjectName);
 			// Devide the cards into columns
@@ -194,36 +198,36 @@ public class ProjectBean extends ActionSupport{
 			projects.add(new Project(sProjectName, rows));
 		}
 	}
-	
+
 	/**
 	 * 
-	 * See if there are any card for the given row for the given column
-	 * If not retun a dummy card with no display style
+	 * See if there are any card for the given row for the given column If not
+	 * retun a dummy card with no display style
 	 * 
 	 * @param lCards
 	 * @param iIIndex
 	 * @return
 	 */
-	private Card getCard(List<Card>lCards, int iIIndex){
-		if(lCards.size() > iIIndex){
+	private Card getCard(List<Card> lCards, int iIIndex) {
+		if (lCards.size() > iIIndex) {
 			return lCards.get(iIIndex);
 		} else {
 			return new Card(false);
 		}
 	}
-	
+
 	/**
 	 * 
-	 * Find maxmum number of row to draw
+	 * Find maximum number of row to draw
 	 * 
 	 * @param lTable
 	 * @return
 	 */
-	private int getRowSize(List<List<Card>>lTable) {
+	private int getRowSize(List<List<Card>> lTable) {
 		int rowSize = 0;
-		for(List<Card> lColumn:lTable){
+		for (List<Card> lColumn : lTable) {
 			int iSize = lColumn.size();
-			if(iSize > rowSize){
+			if (iSize > rowSize) {
 				rowSize = iSize;
 			}
 		}
@@ -238,7 +242,7 @@ public class ProjectBean extends ActionSupport{
 	 * @param lTable
 	 * @return
 	 */
-	private List<List<Card>> addCell(Card card, List<List<Card>>lTable){
+	private List<List<Card>> addCell(Card card, List<List<Card>> lTable) {
 		switch (card.getColumnName()) {
 		case "Backlog":
 			lTable.get(0).add(card);
@@ -279,7 +283,6 @@ public class ProjectBean extends ActionSupport{
 		}
 		return lTable;
 	}
-	
 
 	public String[] getSelectProjects() {
 		return selectProjects;

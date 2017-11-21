@@ -4,9 +4,9 @@
 
 .card-table-header{
 	text-align:center;
-	background:none repeat scroll 0 0 #E5E5E5;
+	background:none repeat scroll 0 0 #d8d8d8;
 	border-bottom:1px solid #BBBBBB;
-	padding:16px;
+	padding:6px;
 }
 
 .curved-box
@@ -19,7 +19,7 @@
     border-radius: 10px;
 }
 .labels tr td {
-	background-color: #2cc16a;
+	background-color: #878787;
 	font-weight: bold;
 	color: #fff;
 }
@@ -29,5 +29,4 @@
 
 [data-toggle="toggle"] {
 	display: none;
-}
 }

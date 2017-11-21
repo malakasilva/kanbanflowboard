@@ -17,7 +17,7 @@
  -->
 <Context>
 
-  <Resource name="jdbc/kabana" auth="Container" type="javax.sql.DataSource" 
+  <Resource name="jdbc/kanban" auth="Container" type="javax.sql.DataSource" 
                maxActive="50" maxIdle="30" maxWait="10000" 
                username="root" password="root" 
                driverClassName="com.mysql.jdbc.Driver" 

@@ -209,8 +209,8 @@ public class ProjectBean extends ActionSupport {
 	 * @return
 	 */
 	private Card getCard(List<Card> lCards, int iIIndex) {
-		if (lCards.size() > iIIndex) {
-			return lCards.get(iIIndex);
+		if (lCards.size() >= iIIndex) {
+			return lCards.get((iIIndex - 1));
 		} else {
 			return new Card(false);
 		}

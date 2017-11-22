@@ -79,9 +79,12 @@ public class WriteData {
 		// Check if the record exists
 		PreparedStatement preparedStatement1 = null;
 		PreparedStatement preparedStatement2 = null;
+		PreparedStatement preparedStatement3 = null;
 		ResultSet resultSet = null;
 		try {
-			preparedStatement1 = connection.prepareStatement("select CardID,ColumnName from Cards where CardID = ?");
+			preparedStatement1 = connection.prepareStatement("select CardID,ColumnName,"
+					+ "Backlog,Planned,USReady,USReviewed,DesignReviewed,InProgress,Blocked,CodeReviewed,SamplesDone,TestsAutomated,Done"
+					+ " from Cards where CardID = ?");
 			preparedStatement1.setString(1, gitCard.getCardId());
 			resultSet = preparedStatement1.executeQuery();
 
@@ -94,21 +97,22 @@ public class WriteData {
 					columnChange = true;
 				}
 
-				StringBuilder sb = new StringBuilder();
-				sb.append("update Cards set ");
-				sb.append("ProjectId = ?,");
-				sb.append("ColumnName = ?,");
-				sb.append("Note = ?,");
-				sb.append("IssueId = ?,");
-				sb.append("Title = ?,");
-				sb.append("AssigneeId = ?,");
-				sb.append("Lastmodifiedtimestamp = ?,");
-				sb.append("IssueLink = ?");				
+				//Update the exising card record
+				StringBuilder sb1 = new StringBuilder();				
+				sb1.append("update Cards set ");
+				sb1.append("ProjectId = ?,");
+				sb1.append("ColumnName = ?,");
+				sb1.append("Note = ?,");
+				sb1.append("IssueId = ?,");
+				sb1.append("Title = ?,");
+				sb1.append("AssigneeId = ?,");
+				sb1.append("Lastmodifiedtimestamp = ?,");
+				sb1.append("IssueLink = ?");				
 				if (columnChange) {
-					sb.append("," + getNewStateColumn(gitCard.getColumn()) + " = ?");
+					sb1.append("," + getNewStateColumn(gitCard.getColumn()) + " = ?");
 				}
-				sb.append(" where CardID = ?");
-				preparedStatement2 = connection.prepareStatement(sb.toString());
+				sb1.append(" where CardID = ?");
+				preparedStatement2 = connection.prepareStatement(sb1.toString());
 				preparedStatement2.setString(1, gitCard.getProjectId());
 				preparedStatement2.setString(2, gitCard.getColumn());
 				preparedStatement2.setString(3, gitCard.getNote());
@@ -120,10 +124,25 @@ public class WriteData {
 				if (columnChange) {
 					preparedStatement2.setTimestamp(9, new Timestamp(new Date().getTime()));
 					preparedStatement2.setString(10, gitCard.getCardId());
+
+					// Add record to history table
+					preparedStatement3 = connection.prepareStatement(
+							"insert into CardHistory (CardID,ColumnName,FromTimestamp,ToTimestamp,Lastmodifiedtimestamp) values (?,?,?,?,?)");
+					preparedStatement3.setString(1, gitCard.getCardId());
+					preparedStatement3.setString(2, currentColumn);
+					Timestamp tFromTimestamp = getFromTimestamp(currentColumn, resultSet);
+					if (tFromTimestamp != null) {
+						preparedStatement3.setTimestamp(3, tFromTimestamp);
+					} else {
+						preparedStatement3.setTimestamp(3, new Timestamp(new Date().getTime()));
+					}
+					preparedStatement3.setTimestamp(4, new Timestamp(new Date().getTime()));
+					preparedStatement3.setTimestamp(5, new Timestamp(currentTimestamp));
+					preparedStatement3.executeUpdate();
 				} else {
 					preparedStatement2.setString(9, gitCard.getCardId());
 				}
-
+				
 				return preparedStatement2.executeUpdate();
 
 			} else {
@@ -161,6 +180,13 @@ public class WriteData {
 				preparedStatement2.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}
+			if (preparedStatement3 != null) {
+				try {
+					preparedStatement3.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			try {
 				resultSet.close();
@@ -206,6 +232,49 @@ public class WriteData {
 
 	}
 
+	/**
+	 * 
+	 * Get the timestamp when moved to the current column
+	 * 
+	 * @param strColumn
+	 * @return
+	 */
+	private Timestamp getFromTimestamp(String sCurrentColumn, ResultSet rs) {
+		// Following order from index 3
+		// Backlog,Planned,USReady,USReviewed,DesignReviewed,InProgress,Blocked,CodeReviewed,SamplesDone,TestsAutomated,Done
+		try {
+			switch (sCurrentColumn) {
+			case "Backlog":
+				return rs.getTimestamp(3);
+			case "Planned":
+				return rs.getTimestamp(4);
+			case "User Stories (Ready)":
+				return rs.getTimestamp(5);
+			case "User Stories (Reviewed)":
+				return rs.getTimestamp(6);
+			case "Design Reviewed":
+				return rs.getTimestamp(7);
+			case "In Progress":
+				return rs.getTimestamp(8);
+			case "Blocked":
+				return rs.getTimestamp(9);
+			case "Code Reviewed":
+				return rs.getTimestamp(10);
+			case "Samples Done":
+				return rs.getTimestamp(11);
+			case "Tests Automated":
+				return rs.getTimestamp(12);
+			case "Done":
+				return rs.getTimestamp(13);
+			default:
+				return rs.getTimestamp(3);
+			}
+		} catch (SQLException se) {
+			se.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * 
 	 * Delete the records that were not update in the cycle

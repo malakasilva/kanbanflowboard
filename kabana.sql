@@ -80,3 +80,15 @@ CREATE TABLE `Projects` (
   PRIMARY KEY (`ProjectID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `CardHistory`;
+
+CREATE TABLE `CardHistory` (
+  `CardHistory` INT NOT NULL AUTO_INCREMENT,
+  `CardID` CHAR(8) NULL,
+  `ColumnName` VARCHAR(45) NULL,
+  `FromTimestamp` DATETIME NULL,
+  `ToTimestamp` DATETIME NULL,
+  `Lastmodifiedtimestamp` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`CardHistory`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
